@@ -7,10 +7,26 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Echo {
     private final static int DEFAULT_PORT = 6710;
+
+    public static String generateRandomString(int length) {
+        int leftLimit = 97;
+        int rightLimit = 122;
+        Random random = new Random();
+        StringBuilder buffer = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            int randomLimitedInt = leftLimit + (int)
+                    (random.nextFloat() * (rightLimit - leftLimit + 1));
+            buffer.append((char) randomLimitedInt);
+        }
+
+        return buffer.toString();
+    }
 
     public static void main(String[] args) throws IOException {
 
@@ -31,33 +47,30 @@ public class Echo {
                     var writer = new PrintWriter(clientSocket.getOutputStream(), true);
                     var reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))
             ) {
-                String promptNick = reader.readLine();
 
+                String promptNick = reader.readLine();
                 System.out.print(promptNick);
 
                 var nick = scanner.nextLine();
-
                 writer.println(nick);
 
                 while (!clientSocket.isClosed()) {
-                    String promptData = reader.readLine();
 
-                    System.out.print(promptData);
+                    String randomString = generateRandomString(15);
+                    System.out.println("Generated random string: " + randomString);
 
-                    var line = scanner.nextLine();
-
-                    if (line.equalsIgnoreCase("Q")) {
-                        System.out.println("Done client!");
-                        break;
-                    }
-
-                    writer.println(line);
+                    writer.println(randomString);
 
                     System.out.println("Waiting for response...");
+                    String response = reader.readLine();
+                    System.out.println("Received response: " + response);
 
-                    line = reader.readLine();
-
-                    System.out.println("Received response: " + line);
+                    System.out.print("Enter 'Q' to quit or press Enter to send another string: ");
+                    String command = scanner.nextLine();
+                    if (command.equalsIgnoreCase("Q")) {
+                        System.out.println("Client session ended.");
+                        break;
+                    }
                 }
             }
         }

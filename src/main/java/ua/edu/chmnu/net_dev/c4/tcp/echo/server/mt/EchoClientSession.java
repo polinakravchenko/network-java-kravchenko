@@ -27,7 +27,7 @@ public class EchoClientSession implements ClientSession {
 
                 String promptNick = "Enter your nick:";
 
-                String promptData = "Enter message (Q to quit):";
+                //String promptData = "Enter message (Q to quit):";
 
                 writer.println(promptNick);
 
@@ -43,7 +43,7 @@ public class EchoClientSession implements ClientSession {
                     try {
                         System.out.println("Waiting text from: " + nick);
 
-                        writer.println(promptData);
+                        //writer.println(promptData);
 
                         String inLine = ir.readLine();
 
@@ -53,11 +53,16 @@ public class EchoClientSession implements ClientSession {
 
                         System.out.println(inPrefix + inLine);
 
+                        long startTime = System.currentTimeMillis();
+
                         String outLine = inverse(inLine);
 
-                        writer.println(outLine);
+                        long endTime = System.currentTimeMillis();
+                        long duration = endTime - startTime;
 
-                        System.out.println(outPrefix + outLine);
+                        writer.println(outLine + " (Processed in " + duration + " ms)");
+
+                        System.out.println(outPrefix + outLine + " (Processed in " + duration + " ms)");
                     } catch (Exception e) {
                         e.printStackTrace();
                         break;
