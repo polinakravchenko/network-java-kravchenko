@@ -26,38 +26,44 @@ public class EchoClientSession implements ClientSession {
                 System.out.println("Establishing connection from: " + socket.getRemoteSocketAddress());
 
                 String promptNick = "Enter your nick:";
-
-                String promptData = "Enter message (Q to quit):";
-
                 writer.println(promptNick);
-
                 String nick = ir.readLine();
-
                 System.out.println("Client nick: " + nick);
-
-                String inPrefix = "[" + nick + "] < ";
-
-                String outPrefix = "[" + nick + "] > ";
 
                 while (!socket.isClosed()) {
                     try {
-                        System.out.println("Waiting text from: " + nick);
+                        System.out.println("Waiting for operation choice from: " + nick);
 
-                        writer.println(promptData);
+                        // Read operation choice
+                        String choiceStr = ir.readLine();
+                        if (choiceStr == null || choiceStr.isBlank()) break;
+                        int choice = Integer.parseInt(choiceStr);
 
-                        String inLine = ir.readLine();
-
-                        if (inLine == null || inLine.isBlank()) {
-                            break;
+                        // Read 5 real numbers
+                        double[] numbers = new double[5];
+                        for (int i = 0; i < 5; i++) {
+                            numbers[i] = Double.parseDouble(ir.readLine());
                         }
 
-                        System.out.println(inPrefix + inLine);
+                        // Perform the operation based on the client's choice
+                        double result;
+                        switch (choice) {
+                            case 0: // Average
+                                result = calculateAverage(numbers);
+                                break;
+                            case 1: // Maximum
+                                result = findMaximum(numbers);
+                                break;
+                            case 2: // Minimum
+                                result = findMinimum(numbers);
+                                break;
+                            default:
+                                writer.println("Invalid operation choice.");
+                                continue;
+                        }
 
-                        String outLine = inverse(inLine);
-
-                        writer.println(outLine);
-
-                        System.out.println(outPrefix + outLine);
+                        // Send the result back to the client
+                        writer.println("Result: " + result);
                     } catch (Exception e) {
                         e.printStackTrace();
                         break;
@@ -73,7 +79,31 @@ public class EchoClientSession implements ClientSession {
         }
     }
 
-    private String inverse(String source) {
-        return new StringBuilder(source).reverse().toString();
+    private double calculateAverage(double[] numbers) {
+        double sum = 0;
+        for (double num : numbers) {
+            sum += num;
+        }
+        return sum / numbers.length;
+    }
+
+    private double findMaximum(double[] numbers) {
+        double max = numbers[0];
+        for (double num : numbers) {
+            if (num > max) {
+                max = num;
+            }
+        }
+        return max;
+    }
+
+    private double findMinimum(double[] numbers) {
+        double min = numbers[0];
+        for (double num : numbers) {
+            if (num < min) {
+                min = num;
+            }
+        }
+        return min;
     }
 }
