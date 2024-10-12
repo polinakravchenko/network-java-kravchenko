@@ -34,27 +34,24 @@ public class EchoClientSession implements ClientSession {
                     try {
                         System.out.println("Waiting for operation choice from: " + nick);
 
-                        // Read operation choice
                         String choiceStr = ir.readLine();
                         if (choiceStr == null || choiceStr.isBlank()) break;
                         int choice = Integer.parseInt(choiceStr);
 
-                        // Read 5 real numbers
                         double[] numbers = new double[5];
                         for (int i = 0; i < 5; i++) {
                             numbers[i] = Double.parseDouble(ir.readLine());
                         }
 
-                        // Perform the operation based on the client's choice
                         double result;
                         switch (choice) {
-                            case 0: // Average
+                            case 0:
                                 result = calculateAverage(numbers);
                                 break;
-                            case 1: // Maximum
+                            case 1:
                                 result = findMaximum(numbers);
                                 break;
-                            case 2: // Minimum
+                            case 2:
                                 result = findMinimum(numbers);
                                 break;
                             default:
@@ -62,7 +59,6 @@ public class EchoClientSession implements ClientSession {
                                 continue;
                         }
 
-                        // Send the result back to the client
                         writer.println("Result: " + result);
                     } catch (Exception e) {
                         e.printStackTrace();
